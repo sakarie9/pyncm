@@ -231,8 +231,9 @@ class TrackHelper:
         """专辑名"""
         if self.data["al"]["id"]:
             return self.data["al"]["name"]
-        else:
+        elif "pc" in self.data:
             return self.data["pc"]["alb"]
+        return "Unknown"
 
     @Default(
         default="https://p1.music.126.net/UeTuwE7pvjBpypWLudqukA==/3132508627578625.jpg"
@@ -242,19 +243,21 @@ class TrackHelper:
         al = self.data["al"] if "al" in self.data else self.data["album"]
         if al["id"] is not None and al["picUrl"]:
             return al["picUrl"]
-        else:
+        elif "pc" in self.data:
             return "https://music.163.com/api/img/blur/" + self.data["pc"]["cid"]
             # source:PC version's core.js
+        return None
 
     @Default(default=["Various Artists"])
     def Artists(self):
         """艺术家名 List"""
-        ar = self.data["ar"] if "ar" in self.data else self.data["artists"]
+        ar = self.data.get("ar") or self.data.get("artists") or []
         ret = [_ar["name"] for _ar in ar]
-        if not ret.count(None):
+        if None not in ret:
             return ret
-        else:
+        elif "pc" in self.data:
             return [self.data["pc"]["ar"]]  # for NCM cloud-drive stored audio
+        return ret
 
     @Default(default="null")
     def CD(self):
@@ -292,7 +295,7 @@ class FuzzyPathHelper(IDCahceHelper):
         self.limit_exts = limit_exts
         super().__init__(basepath)
 
-    def _factory_func(self, _item_id):
+    def _factory_func(self, _item_id, **kwargs):
         # Make some hashtables w/ directory's file listing
         files = filter(
             lambda file: path.isfile(path.join(self.base_path, file)),
@@ -321,14 +324,14 @@ class FuzzyPathHelper(IDCahceHelper):
             those with the selected exts only.
         """
         if partial_extension_check:
-            return name in self.tbl_basenames_noext
+            return self.tbl_basenames_noext is not None and name in self.tbl_basenames_noext
         else:
-            return name in self.tbl_basenames
+            return self.tbl_basenames is not None and name in self.tbl_basenames
 
     def fullpath(self, name):
-        if name in self.tbl_basenames:
+        if self.tbl_basenames is not None and name in self.tbl_basenames:
             return path.join(self.base_path, self.tbl_basenames[name])
-        if name in self.tbl_basenames_noext:
+        if self.tbl_basenames_noext is not None and name in self.tbl_basenames_noext:
             return path.join(self.base_path, self.tbl_basenames_noext[name])
 
     def get_extension(self, name):
