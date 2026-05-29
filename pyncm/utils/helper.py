@@ -16,7 +16,7 @@ def setSession(s):
     session = s
 
 
-def SubstituteWithFullwidth(string, sub=set('\x00\\/:<>|?*".')):
+def SubstituteWithFullwidth(string, sub=set('\x00\\/:<>|?*"')):
     return "".join([c if not c in sub else chr(ord(c) + 0xFEE0) for c in string])
 
 
