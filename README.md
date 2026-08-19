@@ -46,10 +46,11 @@
                                 注：该参数也可使用模板，格式同 保存文件名模板
     --quality 音质          音频音质（高音质需要 CVIP）
                                 参数：
-                                    hires  - Hi-Res
+                                    hires   - Hi-Res
                                     lossless- “无损”
-                                    exhigh  - 较高
-                                    standard- 标准
+                                    exhigh  - 极高 (320k)
+                                    higher  - 较高 (192k)
+                                    standard- 标准 (128k)
     -dl, --use-download-api
                             调用下载API，而非播放API进行下载。如此可能允许更高高音质音频的下载。
                             【注意】此API有额度限制，参考 https://music.163.com/member/downinfo

@@ -97,7 +97,7 @@ session = LoadSessionFromString(dump)
 |---|---|---|
 | `GetTrackDetail(song_ids)` | Weapi | 获取歌曲详情。ids <= 1000。接受 list/str/int |
 | `GetTrackAudio(song_ids, bitrate=320000, encodeType="aac")` | Eapi | 获取音频 URL。**需要登录** |
-| `GetTrackAudioV1(song_ids, level="standard", encodeType="flac")` | Eapi | V1 音频接口。level: standard/exhigh/lossless/hires/jyeffect/sky/jymaster |
+| `GetTrackAudioV1(song_ids, level="standard", encodeType="flac")` | Eapi | V1 音频接口。level: standard(128k)/higher(192k)/exhigh(320k)/lossless/hires/jyeffect/sky/jymaster |
 | `GetTrackDownloadURL(song_ids, ...)` | Eapi | **已弃用** — 抛出 NotImplementedError |
 | `GetTrackDownloadURLV1(song_ids, level="standard")` | Eapi | 下载 API（有额度限制） |
 | `GetTrackLyrics(song_id, lv=-1, tv=-1, rv=-1)` | Weapi | 获取歌词（原文/翻译/罗马音）。-1 = 最新版本 |

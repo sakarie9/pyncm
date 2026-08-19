@@ -638,13 +638,14 @@ def parse_args(quit_on_empty_args=True):
     group.add_argument(
         "--quality",
         metavar="音质",
-        choices=["standard", "exhigh", "lossless", "hires"],
+        choices=["standard", "higher", "exhigh", "lossless", "hires"],
         help=r"""音频音质（高音质需要 CVIP）
     参数：
-        hires  - Hi-Res
+        hires   - Hi-Res
         lossless- “无损”
-        exhigh  - 较高
-        standard- 标准""",
+        exhigh  - 极高 (320k)
+        higher  - 较高 (192k)
+        standard- 标准 (128k)""",
         default="standard",
     )
     group.add_argument(

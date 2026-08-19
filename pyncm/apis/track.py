@@ -53,7 +53,7 @@ def GetTrackAudioV1(song_ids: Union[list, str, int], level="standard", encodeTyp
 
     Args:
         song_ids (list, str, int): 歌曲 ID
-        level (str, optional): 音质 standard / exhigh / lossless / hires / jyeffect / sky / jymaster
+        level (str, optional): 音质 standard(128k) / higher(192k) / exhigh(320k) / lossless / hires / jyeffect / sky / jymaster
         encodeType (str, optional) Defaults to `flac`. 使用高 level 值时无视该选项
 
     Notes:
@@ -104,7 +104,7 @@ def GetTrackDownloadURLV1(song_ids: Union[list, str, int], level="standard"):
 
     Args:
         song_ids (list, str, int): 歌曲 ID
-        level (str, optional): 音质 standard / exhigh / lossless / hires / jyeffect / sky / jymaster
+        level (str, optional): 音质 standard(128k) / higher(192k) / exhigh(320k) / lossless / hires / jyeffect / sky / jymaster
     Notes:
         song_ids 项目数应 <= 1000
 
