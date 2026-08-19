@@ -370,7 +370,10 @@ class Playlist(Subroutine):
     def filter(self, song_list):
         # This is only meant to faciliate sorting w/ APIs that doesn't implement them
         # The observed behaviors remains more or less the same with the offical ones
-        if self.args.count > 0 and self.args.sort_by != "default":
+        if self.args.sort_by == "added":
+            # 已在 __call__ 中按收藏时间排序，此处仅做限量截取
+            pass
+        elif self.args.count > 0 and self.args.sort_by != "default":
             sorting = {
                 "hot": lambda song: float(song["pop"]),  # [0,100.0]
                 "time": lambda song: TrackHelper(
@@ -453,9 +456,16 @@ class Playlist(Subroutine):
         for _id in ids:
             dList = playlist.GetPlaylistInfo(_id, session=session)
             logger.info(self.prefix + "：%s" % dict(dList)["playlist"]["name"])
-            queuedTasks = self.forIds(
-                [tid.get("id") for tid in dict(dList)["playlist"]["trackIds"]]
-            )
+            trackIds = dict(dList)["playlist"]["trackIds"]
+            # 按收藏时间（加入歌单时间，毫秒时间戳）排序
+            # 与 hot/time 不同，added 不受 -n 限制；默认新在前，--reverse-sort 则旧在前
+            if self.args.sort_by == "added":
+                trackIds = sorted(
+                    trackIds,
+                    key=lambda tid: tid.get("at", 0),
+                    reverse=not self.args.reverse_sort,
+                )
+            queuedTasks = self.forIds([tid.get("id") for tid in trackIds])
             queued += queuedTasks
         return queued
 
@@ -465,6 +475,10 @@ class Album(Playlist):
 
     def __call__(self, ids):
         queued = []
+        if self.args.sort_by == "added":
+            logger.warning(
+                "专辑/艺术家不包含收藏时间信息，--sort-by added 已忽略（按原顺序下载）"
+            )
         for _id in ids:
             dList = album.GetAlbumInfo(_id, session=session)
             logger.info(self.prefix + "：%s" % dict(dList)["album"]["name"])
@@ -704,14 +718,15 @@ def parse_args(quit_on_empty_args=True):
         "--sort-by",
         metavar="歌曲排序",
         default="default",
-        help="【限制总量时】歌曲排序方式 (default: 默认排序 hot: 热度高（相对于其所在专辑）在前 time: 发行时间新在前)",
-        choices=["default", "hot", "time"],
+        help="歌曲排序方式 (default: 默认排序 hot: 热度高（相对于其所在专辑）在前 time: 发行时间新在前)\n"
+        "hot/time 仅在限制总量(-n)时生效；added: 收藏时间新在前（不受 -n 限制，仅歌单有效，--reverse-sort 则旧在前）",
+        choices=["default", "hot", "time", "added"],
     )
     group.add_argument(
         "--reverse-sort",
         action="store_true",
         default=False,
-        help="【限制总量时】倒序排序歌曲",
+        help="倒序排序歌曲（hot/time 需配合 -n 使用；added 不受 -n 限制）",
     )
     group.add_argument(
         "--user-bookmarks",
